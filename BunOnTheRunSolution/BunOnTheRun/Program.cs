@@ -8,18 +8,13 @@ namespace BunOnTheRun
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllersWithViews();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddMemoryCache();
             builder.Services.AddHttpClient();
             builder.Services.AddScoped<IOsmService, OsmService>();
-
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll",
-                    policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-            });
 
             var app = builder.Build();
 
@@ -29,8 +24,14 @@ namespace BunOnTheRun
                 app.UseSwaggerUI();
             }
 
+            app.UseStaticFiles(); 
+            app.UseRouting();
             app.UseCors("AllowAll");
+
             app.MapControllers();
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }
