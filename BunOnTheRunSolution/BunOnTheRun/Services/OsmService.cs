@@ -18,6 +18,7 @@ namespace BunOnTheRun.Services
         {
             _httpClient = httpClient;
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "BunOnTheRun-StudentProject/1.0");
+            _httpClient.DefaultRequestHeaders.Add("Accept-Language", "uk-UA,uk;q=0.9,en;q=0.8");
         }
 
         public async Task<(double Lat, double Lon)?> GetCoordinatesAsync(string city, string address)
@@ -42,18 +43,15 @@ namespace BunOnTheRun.Services
             }
             catch (Exception ex)
             {
-
-                Console.WriteLine($"Ошибка геокодинга: {ex.Message}");
+                Console.WriteLine($"Error: {ex.Message}");
             }
-
             return null;
         }
 
-        public async Task<List<BakeryDto>> GetBakeriesAsync(double userLat, double userLon, double radiusMeters = 2000)
+        public async Task<List<BakeryDto>> GetBakeriesAsync(double userLat, double userLon, double radiusMeters = 1000) 
         {
-            // Запрос оставляем тем же
-            var query = $"[out:json];node[\"shop\"=\"bakery\"](around:{radiusMeters},{userLat.ToString(CultureInfo.InvariantCulture)},{userLon.ToString(CultureInfo.InvariantCulture)});out;";
-            var url = $"https://overpass-api.de/api/interpreter?data={Uri.EscapeDataString(query)}";
+            var query = $"[out:json][timeout:10];node[\"shop\"=\"bakery\"](around:{radiusMeters},{userLat.ToString(CultureInfo.InvariantCulture)},{userLon.ToString(CultureInfo.InvariantCulture)});out;";
+            var url = $"https://overpass.kumi.systems/api/interpreter?data={Uri.EscapeDataString(query)}";
 
             try
             {
@@ -71,10 +69,10 @@ namespace BunOnTheRun.Services
                     {
                         var tags = item.Tags ?? new Dictionary<string, string>();
 
-                        // 1. Достаем название
-                        var name = tags.ContainsKey("name") ? tags["name"] : "Безымянная пекарня";
+                        string name = "Пекарня без назви";
+                        if (tags.ContainsKey("name:uk")) name = tags["name:uk"];
+                        else if (tags.ContainsKey("name")) name = tags["name"];
 
-                        // 2. Достаем адрес (НОВОЕ)
                         string? address = null;
                         if (tags.ContainsKey("addr:street"))
                         {
@@ -90,23 +88,23 @@ namespace BunOnTheRun.Services
                             Name = name,
                             Latitude = item.Lat,
                             Longitude = item.Lon,
-                            Address = address, // Теперь тут будет строка или null, если адреса нет
+                            Address = address,
                             DistanceMeters = CalculateDistance(userLat, userLon, item.Lat, item.Lon)
                         });
                     }
                 }
-                return bakeries;
+                return bakeries.OrderBy(b => b.DistanceMeters).ToList();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка поиска мест: {ex.Message}");
+                Console.WriteLine($"Error: {ex.Message}");
                 return new List<BakeryDto>();
             }
         }
 
         private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
-            var R = 6371e3; 
+            var R = 6371e3;
             var phi1 = lat1 * Math.PI / 180;
             var phi2 = lat2 * Math.PI / 180;
             var deltaPhi = (lat2 - lat1) * Math.PI / 180;
@@ -116,7 +114,6 @@ namespace BunOnTheRun.Services
                     Math.Cos(phi1) * Math.Cos(phi2) *
                     Math.Sin(deltaLambda / 2) * Math.Sin(deltaLambda / 2);
             var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-
             return R * c;
         }
     }
