@@ -1,0 +1,196 @@
+/* Основні налаштування */
+:root {
+    --bg-color: #FDF8F0;
+    --text-dark: #3E2713;
+    --accent-orange: #E6A349;
+    --accent-brown: #5C3D2E;
+    --card-bg: #FFFBF5;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-dark);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Щоб карта не створювала подвійний скрол */
+}
+
+/* Лейаут на весь екран */
+.main-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+/* Ліва панель */
+.sidebar {
+    width: 450px;
+    min-width: 400px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    z-index: 10;
+    background-color: var(--bg-color);
+    overflow-y: auto;
+}
+
+.logo-placeholder {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+.logo-placeholder .highlight {
+    color: var(--accent-orange);
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: var(--text-dark);
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #664E38;
+    margin-bottom: 30px;
+    line-height: 1.4;
+}
+
+/* Пошук */
+.search-box {
+    margin-bottom: 30px;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #DCC8B0;
+    border-radius: 8px;
+    background-color: #FFF;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-icon-btn {
+    background: none;
+    border: 1px solid #DCC8B0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0 15px;
+    transition: background 0.3s;
+}
+
+.search-icon-btn:hover {
+    background-color: #FFECCF;
+}
+
+/* Картки пекарень */
+.bakery-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 20px;
+}
+
+.bakery-card {
+    background-color: #FFF;
+    border: 1px solid #EAD8C0;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    transition: transform 0.2s;
+}
+
+.bakery-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+}
+
+.icon-box {
+    width: 60px;
+    height: 60px;
+    background-color: #FFECCF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.card-content {
+    flex-grow: 1;
+}
+
+.bakery-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    color: #5C3D2E;
+}
+
+.distance-info {
+    text-align: right;
+    font-size: 12px;
+    color: #6978A0; /* Синій відтінок як на макеті */
+    margin-top: 5px;
+}
+
+/* Кнопка з анімацією (Як на Figma) */
+.btn-google {
+    display: inline-block;
+    position: relative;
+    padding: 8px 16px;
+    border: 1px solid #5C3D2E;
+    border-radius: 20px;
+    color: #5C3D2E;
+    text-decoration: none;
+    font-size: 14px;
+    overflow: hidden;
+    transition: color 0.4s;
+    z-index: 1;
+    cursor: pointer;
+}
+
+/* Анімація заливки */
+.btn-google::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background-color: var(--accent-orange); /* Колір при наведенні */
+    transition: width 0.4s ease-in-out;
+    z-index: -1;
+}
+
+.btn-google:hover::before {
+    width: 100%;
+}
+
+.btn-google:hover {
+    color: #FFF; /* Текст стає білим */
+    border-color: var(--accent-orange);
+}
+
+/* Карта */
+.map-container {
+    flex-grow: 1;
+    height: 100%;
+    background-color: #E5E5E5;
+}
