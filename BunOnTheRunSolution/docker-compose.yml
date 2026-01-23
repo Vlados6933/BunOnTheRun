@@ -1,0 +1,11 @@
+services:
+  bunontherun:
+    image: bunontherun-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5053:8080"  # Картуємо порт 5053 твого компа на 8080 в контейнері
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    restart: unless-stopped

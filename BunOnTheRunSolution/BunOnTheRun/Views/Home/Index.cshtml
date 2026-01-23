@@ -1,5 +1,5 @@
 @{
-    Layout = null; /* Вимикаємо пошук лейауту, бо сторінка самостійна */
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -10,40 +10,45 @@
     <title>BunOnTheRun - Не бігай далеко</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
 
-<div class="main-container">
-    <div class="sidebar">
-        <div class="header-section">
-            <div class="logo-area">
-                <div class="logo-placeholder">🍩 Bun<span class="highlight">OnTheRun</span></div>
-            </div>
-            <h1>Не бігай далеко</h1>
-            <p class="subtitle">Ми десь поряд. Знайди зручну точку, щоб перекусити на ходу.</p>
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="header-section">
+                <div class="logo-area">
+                    <img src="~/images/logo.png" alt="BunOnTheRun Logo" class="site-logo" />
+                </div>
+                <h1>Не бігай далеко</h1>
+                <p class="subtitle">Ми десь поряд. Знайди зручну точку, щоб перекусити на ходу.</p>
 
-            <div class="search-box">
-                <label for="cityInput">Введіть адресу:</label>
-                <div class="input-group">
-                    <input type="text" id="cityInput" placeholder="Місто (напр. Київ)" value="Київ" />
-                    <input type="text" id="addressInput" placeholder="Вулиця (напр. Хрещатик)" />
-                    <button id="searchBtn" class="search-icon-btn">🔍</button>
+                <div class="search-box">
+                    <label for="cityInput">Введіть адресу:</label>
+                    <div class="input-group">
+                        <input type="text" id="cityInput" placeholder="Місто (напр. Київ)" value="Київ" />
+                        
+                        <div class="address-wrapper" style="position: relative; flex-grow: 1;">
+                            <input type="text" id="addressInput" placeholder="Вулиця (напр. Хрещатик)" autocomplete="off" />
+                            <ul id="suggestionsList" class="suggestions-list"></ul>
+                        </div>
+
+                        <button id="searchBtn" class="search-icon-btn">🔍</button>
+                    </div>
                 </div>
             </div>
+
+            <h2 id="resultsTitle">Найпопулярніші</h2>
+            
+            <div id="bakeryList" class="bakery-list">
+                <div class="empty-state">Введіть адресу для пошуку смаколиків поруч!</div>
+            </div>
         </div>
 
-        <h2 id="resultsTitle">Найпопулярніші</h2>
-            
-        <div id="bakeryList" class="bakery-list">
-            <div class="empty-state">Введіть адресу для пошуку смаколиків поруч!</div>
-        </div>
+        <div id="map" class="map-container"></div>
     </div>
 
-    <div id="map" class="map-container"></div>
-</div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="~/js/site.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 </body>
 </html>

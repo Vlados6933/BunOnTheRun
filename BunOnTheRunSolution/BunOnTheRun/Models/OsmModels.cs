@@ -8,7 +8,10 @@ namespace BunOnTheRun.Models
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string? Address { get; set; } 
-        public double DistanceMeters { get; set; } 
+        public double DistanceMeters { get; set; }
+        
+        // Нове поле для графіку роботи
+        public string? OpeningHours { get; set; }
     }
 
     public class NominatimResult

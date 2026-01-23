@@ -1,4 +1,3 @@
-/* Основні налаштування */
 :root {
     --bg-color: #FDF8F0;
     --text-dark: #3E2713;
@@ -13,17 +12,16 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Щоб карта не створювала подвійний скрол */
+    overflow: hidden;
 }
 
-/* Лейаут на весь екран */
 .main-container {
     display: flex;
     height: 100vh;
     width: 100%;
 }
 
-/* Ліва панель */
+/* --- САЙДБАР (ЛІВА ПАНЕЛЬ) --- */
 .sidebar {
     width: 450px;
     min-width: 400px;
@@ -36,21 +34,20 @@ body {
     overflow-y: auto;
 }
 
-.logo-placeholder {
-    font-size: 24px;
-    font-weight: bold;
+/* Логотип */
+.site-logo {
+    max-width: 250px;
+    height: auto;
     margin-bottom: 20px;
-    color: var(--text-dark);
+    display: block;
 }
 
-.logo-placeholder .highlight {
-    color: var(--accent-orange);
-}
-
+/* Заголовки */
 h1 {
     font-size: 32px;
     margin-bottom: 10px;
     color: var(--text-dark);
+    margin-top: 0;
 }
 
 .subtitle {
@@ -60,7 +57,7 @@ h1 {
     line-height: 1.4;
 }
 
-/* Пошук */
+/* --- ПОШУК (ВИПРАВЛЕНО) --- */
 .search-box {
     margin-bottom: 30px;
 }
@@ -69,33 +66,89 @@ h1 {
     display: flex;
     gap: 10px;
     margin-top: 10px;
+    /* ВИРІВНЮВАННЯ: Це ставить поля і кнопку рівно по центру вертикально */
+    align-items: center;
 }
 
+/* Загальні стилі для полів вводу */
 input {
     width: 100%;
-    padding: 12px 15px;
+    padding: 12px 15px; /* Однаковий паддінг для висоти */
     border: 1px solid #DCC8B0;
     border-radius: 8px;
     background-color: #FFF;
     font-size: 16px;
     outline: none;
+    box-sizing: border-box; /* Важливо: щоб паддінги не ламали розміри */
 }
 
+/* Поле міста (займає 1 частину місця) */
+#cityInput {
+    flex: 1;
+    min-width: 100px;
+}
+
+/* Обгортка для адреси (займає 2 частини місця - ширше) */
+.address-wrapper {
+    flex: 2;
+    position: relative;
+}
+
+/* Кнопка пошуку */
 .search-icon-btn {
-    background: none;
+    background: #fff;
     border: 1px solid #DCC8B0;
     border-radius: 8px;
     cursor: pointer;
     font-size: 18px;
-    padding: 0 15px;
+    /* ВАЖЛИВО: Паддінг такий самий, як у input, щоб висота була ідеальною */
+    padding: 12px 15px;
     transition: background 0.3s;
+
+    /* Центрування іконки всередині кнопки */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }
 
 .search-icon-btn:hover {
     background-color: #FFECCF;
 }
 
-/* Картки пекарень */
+/* --- АВТОДОПОВНЕННЯ (СПИСОК) --- */
+.suggestions-list {
+    position: absolute;
+    top: 100%; /* Одразу під полем */
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #EAD8C0;
+    border-radius: 0 0 8px 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.suggestions-list li {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    color: #5C3D2E;
+}
+
+.suggestions-list li:hover {
+    background-color: #FFFBF5;
+    color: #E6A349;
+}
+
+/* --- СПИСОК ПЕКАРЕНЬ (КАРТКИ) --- */
 .bakery-list {
     display: flex;
     flex-direction: column;
@@ -112,7 +165,14 @@ input {
     align-items: center;
     gap: 15px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s; /* Додали анімацію тіні */
+
+    cursor: pointer; /* 👇 ВАЖЛИВО: Показує руку при наведенні */
+}
+
+/* Додатковий ефект активної картки */
+.bakery-card:active {
+    transform: scale(0.98);
 }
 
 .bakery-card:hover {
@@ -146,11 +206,11 @@ input {
 .distance-info {
     text-align: right;
     font-size: 12px;
-    color: #6978A0; /* Синій відтінок як на макеті */
+    color: #6978A0;
     margin-top: 5px;
 }
 
-/* Кнопка з анімацією (Як на Figma) */
+/* --- КНОПКА GOOGLE З АНІМАЦІЄЮ --- */
 .btn-google {
     display: inline-block;
     position: relative;
@@ -174,7 +234,7 @@ input {
     left: 0;
     width: 0%;
     height: 100%;
-    background-color: var(--accent-orange); /* Колір при наведенні */
+    background-color: var(--accent-orange);
     transition: width 0.4s ease-in-out;
     z-index: -1;
 }
@@ -184,13 +244,37 @@ input {
 }
 
 .btn-google:hover {
-    color: #FFF; /* Текст стає білим */
+    color: #FFF;
     border-color: var(--accent-orange);
 }
 
-/* Карта */
+/* --- КАРТА --- */
 .map-container {
     flex-grow: 1;
     height: 100%;
     background-color: #E5E5E5;
+}
+
+/* Стилі для спливаючих вікон (Popups) на карті */
+.leaflet-popup-content-wrapper {
+    border-radius: 12px;
+}
+
+.leaflet-popup-content b {
+    color: var(--accent-brown);
+    font-size: 16px;
+}
+
+.opening-hours-popup {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #444;
+    line-height: 1.4;
+}
+
+.opening-hours-title {
+    font-weight: bold;
+    color: var(--accent-orange);
+    display: block;
+    margin-bottom: 4px;
 }
