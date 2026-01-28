@@ -3,28 +3,38 @@
     --text-dark: #3E2713;
     --accent-orange: #E6A349;
     --accent-brown: #5C3D2E;
-    --card-bg: #FFFBF5;
+
+    /* Кольори карток */
+    --card-bg-beige: #FFECCF;
+    --card-border-brown: #5C3D2E;
+    --icon-bg-beige: #F7E3C3;
+    --link-blue: #0056b3;
+
+    /* Шрифти */
+    --font-title: 'Unbounded', sans-serif;
+    --font-body: 'Manrope', sans-serif;
 }
 
 body {
     background-color: var(--bg-color);
     color: var(--text-dark);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font-body);
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: hidden; /* На десктопі ховаємо скрол вікна */
 }
 
+/* --- ГОЛОВНИЙ КОНТЕЙНЕР --- */
 .main-container {
     display: flex;
     height: 100vh;
-    width: 100%;
+    width: 100vw;
 }
 
-/* --- САЙДБАР (ЛІВА ПАНЕЛЬ) --- */
+/* --- ЛІВА ЧАСТИНА (САЙДБАР) --- */
 .sidebar {
-    width: 450px;
-    min-width: 400px;
+    width: 50%;
+    flex-shrink: 0;
     padding: 40px;
     display: flex;
     flex-direction: column;
@@ -32,201 +42,284 @@ body {
     z-index: 10;
     background-color: var(--bg-color);
     overflow-y: auto;
+    box-sizing: border-box;
 }
 
-/* Логотип */
+/* --- ПРАВА ЧАСТИНА (КАРТА) --- */
+.map-container {
+    width: 50%;
+    height: 100%;
+    background-color: #E5E5E5;
+}
+
+/* --- ШАПКА --- */
+.brand-header {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.logo-area { flex-shrink: 0; }
+
 .site-logo {
-    max-width: 250px;
+    max-width: 132px;
     height: auto;
-    margin-bottom: 20px;
     display: block;
 }
 
-/* Заголовки */
+.header-text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* --- ТИПОГРАФІКА --- */
 h1 {
+    font-family: var(--font-title);
+    font-weight: 700;
     font-size: 32px;
-    margin-bottom: 10px;
+    line-height: 1.1;
     color: var(--text-dark);
-    margin-top: 0;
+    margin: 0;
+    letter-spacing: -0.5px;
 }
 
 .subtitle {
-    font-size: 16px;
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 15px;
     color: #664E38;
-    margin-bottom: 30px;
-    line-height: 1.4;
+    margin: 0;
+    line-height: 1.5;
 }
 
-/* --- ПОШУК (ВИПРАВЛЕНО) --- */
-.search-box {
-    margin-bottom: 30px;
+#resultsTitle {
+    font-family: var(--font-title);
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--accent-brown);
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+/* --- ПОШУК --- */
+.search-box { margin-bottom: 30px; }
+
+.search-box label {
+    font-family: var(--font-title);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block;
+    color: var(--text-dark);
 }
 
 .input-group {
     display: flex;
     gap: 10px;
     margin-top: 10px;
-    /* ВИРІВНЮВАННЯ: Це ставить поля і кнопку рівно по центру вертикально */
     align-items: center;
 }
 
-/* Загальні стилі для полів вводу */
 input {
     width: 100%;
-    padding: 12px 15px; /* Однаковий паддінг для висоти */
+    padding: 14px 18px;
     border: 1px solid #DCC8B0;
-    border-radius: 8px;
+    border-radius: 12px;
     background-color: #FFF;
+    font-family: var(--font-body);
     font-size: 16px;
     outline: none;
-    box-sizing: border-box; /* Важливо: щоб паддінги не ламали розміри */
+    box-sizing: border-box;
+    transition: border-color 0.3s;
 }
 
-/* Поле міста (займає 1 частину місця) */
-#cityInput {
-    flex: 1;
-    min-width: 100px;
+input:focus {
+    border-color: var(--accent-orange);
 }
 
-/* Обгортка для адреси (займає 2 частини місця - ширше) */
-.address-wrapper {
-    flex: 2;
-    position: relative;
-}
+input::placeholder { font-family: var(--font-body); color: #9CA3AF; }
 
-/* Кнопка пошуку */
+#cityInput { flex: 1; min-width: 100px; }
+.address-wrapper { flex: 2; position: relative; }
+
 .search-icon-btn {
     background: #fff;
     border: 1px solid #DCC8B0;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 18px;
-    /* ВАЖЛИВО: Паддінг такий самий, як у input, щоб висота була ідеальною */
-    padding: 12px 15px;
+    font-size: 20px;
+    padding: 14px 20px;
     transition: background 0.3s;
-
-    /* Центрування іконки всередині кнопки */
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
 }
+.search-icon-btn:hover { background-color: #FFECCF; }
 
-.search-icon-btn:hover {
-    background-color: #FFECCF;
-}
+/* --- КНОПКА ГЕОПОЗИЦІЇ (СТИЛЬНА) --- */
+.btn-location {
+    margin-top: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 
-/* --- АВТОДОПОВНЕННЯ (СПИСОК) --- */
-.suggestions-list {
-    position: absolute;
-    top: 100%; /* Одразу під полем */
-    left: 0;
-    width: 100%;
-    background: white;
-    border: 1px solid #EAD8C0;
-    border-radius: 0 0 8px 8px;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    z-index: 1000;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    display: none;
-    max-height: 200px;
-    overflow-y: auto;
-}
+    /* Стиль як у полів вводу: білий фон, бежева рамка */
+    background-color: #FFF;
+    border: 1px solid #DCC8B0;
+    border-radius: 12px; /* Таке ж заокруглення як у input */
 
-.suggestions-list li {
-    padding: 10px 15px;
-    cursor: pointer;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 14px;
     color: #5C3D2E;
+    padding: 12px 20px;
+
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
 }
 
-.suggestions-list li:hover {
-    background-color: #FFFBF5;
-    color: #E6A349;
+.btn-location span {
+    font-size: 18px; /* Розмір емодзі */
 }
 
-/* --- СПИСОК ПЕКАРЕНЬ (КАРТКИ) --- */
+.btn-location:hover {
+    border-color: var(--accent-orange); /* Акцент при наведенні */
+    color: var(--accent-orange);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+}
+
+.btn-location:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+
+/* Автодоповнення */
+.suggestions-list {
+    position: absolute; top: 100%; left: 0; width: 100%;
+    background: white; border: 1px solid #EAD8C0; border-radius: 0 0 12px 12px;
+    list-style: none; padding: 0; margin: 0; z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; max-height: 200px; overflow-y: auto;
+}
+.suggestions-list li {
+    padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0;
+    font-size: 14px; color: #5C3D2E; font-family: var(--font-body);
+}
+.suggestions-list li:hover { background-color: #FFFBF5; color: #E6A349; }
+
+/* --- КАРТКИ ПЕКАРЕНЬ --- */
 .bakery-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding-bottom: 20px;
+    padding-bottom: 40px;
 }
 
 .bakery-card {
-    background-color: #FFF;
-    border: 1px solid #EAD8C0;
-    border-radius: 16px;
+    background-color: var(--card-bg-beige);
+    border: 2px solid #000;
+    border-radius: 20px;
     padding: 20px;
+    height: 145px; /* Фіксована висота */
     display: flex;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    transition: transform 0.2s, box-shadow 0.2s; /* Додали анімацію тіні */
-
-    cursor: pointer; /* 👇 ВАЖЛИВО: Показує руку при наведенні */
-}
-
-/* Додатковий ефект активної картки */
-.bakery-card:active {
-    transform: scale(0.98);
+    gap: 20px;
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    cursor: pointer;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .bakery-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+    box-shadow: 6px 6px 0px rgba(0,0,0,0.15);
 }
 
-.icon-box {
-    width: 60px;
-    height: 60px;
-    background-color: #FFECCF;
-    border-radius: 50%;
+/* Логотип пекарні */
+.logo-wrapper {
+    width: 90px;
+    height: 90px;
+    min-width: 90px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    flex-shrink: 0;
+    background-color: #EAD2AC;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #D4B88C;
 }
 
+.logo-wrapper img {
+    width: 60%;
+    height: 60%;
+    object-fit: contain;
+}
+
+.icon-box {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+}
+
+/* Контент картки */
 .card-content {
-    flex-grow: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
 }
 
+/* Назва пекарні */
 .bakery-name {
-    font-size: 18px;
-    font-weight: bold;
-    margin: 0 0 10px 0;
-    color: #5C3D2E;
+    font-family: var(--font-title);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #4A3426;
+    margin-bottom: 14px;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    min-height: 38px;
 }
 
-.distance-info {
-    text-align: right;
-    font-size: 12px;
-    color: #6978A0;
-    margin-top: 5px;
-}
-
-/* --- КНОПКА GOOGLE З АНІМАЦІЄЮ --- */
+/* Кнопка Google */
 .btn-google {
-    display: inline-block;
-    position: relative;
-    padding: 8px 16px;
-    border: 1px solid #5C3D2E;
-    border-radius: 20px;
-    color: #5C3D2E;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+
+    border: 1px solid #4A3426;
+    border-radius: 50px;
+    color: #4A3426;
+    background: transparent;
+
     text-decoration: none;
     font-size: 14px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    width: fit-content;
+    white-space: nowrap;
+
+    position: relative;
     overflow: hidden;
-    transition: color 0.4s;
     z-index: 1;
-    cursor: pointer;
+    transition: color 0.4s ease;
 }
 
-/* Анімація заливки */
 .btn-google::before {
     content: '';
     position: absolute;
@@ -234,47 +327,73 @@ input {
     left: 0;
     width: 0%;
     height: 100%;
-    background-color: var(--accent-orange);
+    background-color: #4A3426;
     transition: width 0.4s ease-in-out;
     z-index: -1;
 }
 
-.btn-google:hover::before {
-    width: 100%;
+.btn-google:hover::before { width: 100%; }
+.btn-google:hover { color: #FFF; }
+
+/* Відстань */
+.distance-info {
+    text-align: right;
+    font-size: 14px;
+    color: #0056b3;
+    text-decoration: underline;
+    font-family: var(--font-body);
+    font-weight: 500;
+    margin-top: 5px;
 }
 
-.btn-google:hover {
-    color: #FFF;
-    border-color: var(--accent-orange);
-}
+/* --- ПОПАПИ КАРТИ --- */
+.leaflet-popup-content-wrapper { border-radius: 12px; font-family: var(--font-body); }
+.leaflet-popup-content b { color: var(--accent-brown); font-size: 16px; font-family: var(--font-title); }
+.opening-hours-popup { margin-top: 10px; font-size: 13px; color: #444; line-height: 1.4; }
+.opening-hours-title { font-weight: bold; color: var(--accent-orange); display: block; margin-bottom: 4px; }
 
-/* --- КАРТА --- */
-.map-container {
-    flex-grow: 1;
-    height: 100%;
-    background-color: #E5E5E5;
-}
 
-/* Стилі для спливаючих вікон (Popups) на карті */
-.leaflet-popup-content-wrapper {
-    border-radius: 12px;
-}
+/* =========================================
+   АДАПТАЦІЯ ПІД МОБІЛЬНІ
+   ========================================= */
 
-.leaflet-popup-content b {
-    color: var(--accent-brown);
-    font-size: 16px;
-}
+@media screen and (max-width: 1024px) {
+    body { overflow-y: auto; height: auto; }
 
-.opening-hours-popup {
-    margin-top: 10px;
-    font-size: 13px;
-    color: #444;
-    line-height: 1.4;
-}
+    .main-container {
+        flex-direction: column;
+        height: auto;
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+    }
 
-.opening-hours-title {
-    font-weight: bold;
-    color: var(--accent-orange);
-    display: block;
-    margin-bottom: 4px;
+    .sidebar { display: contents; }
+
+    .brand-header { order: 1; margin-bottom: 20px; justify-content: flex-start; }
+    .search-box { order: 2; margin-bottom: 25px; }
+
+    .map-container {
+        order: 3;
+        width: 100%;
+        height: 350px;
+        border-radius: 24px;
+        border: 2px solid #3E2713;
+        margin-bottom: 30px;
+        z-index: 1;
+    }
+
+    #resultsTitle { order: 4; margin-top: 0; margin-bottom: 20px; font-size: 24px; }
+    .bakery-list { order: 5; padding-bottom: 40px; }
+
+    .site-logo { max-width: 80px; }
+    h1 { font-size: 22px; }
+    .subtitle { font-size: 13px; line-height: 1.3; }
+
+    .input-group { gap: 8px; }
+    input { padding: 12px; font-size: 14px; border-radius: 10px; }
+    .search-icon-btn { padding: 12px; border-radius: 10px; }
+
+    .leaflet-touch .leaflet-control-layers,
+    .leaflet-touch .leaflet-bar { border: 2px solid rgba(0,0,0,0.2); }
 }

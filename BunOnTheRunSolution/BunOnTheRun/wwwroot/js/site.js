@@ -15,20 +15,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let markers = [];
 
-    // Іконки
+    // ---------------------------------------------------------
+    // ІКОНКИ
+    // ---------------------------------------------------------
+
+    // Іконка користувача (Велика)
     const userIcon = L.icon({
         iconUrl: '/images/user-pin.png',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40]
+        iconSize: [80, 80],
+        iconAnchor: [40, 80],
+        popupAnchor: [0, -80]
     });
 
-    const bakeryIcon = new L.Icon.Default();
+    // Іконка пекарні (Кастомна)
+    const bakeryIcon = L.icon({
+        iconUrl: '/images/bakery-pin.png',
+        iconSize: [50, 50],
+        iconAnchor: [25, 50],
+        popupAnchor: [0, -50]
+    });
 
     // ---------------------------------------------------------
-    // 2. ЕЛЕМЕНТИ ТА ЗМІННІ
+    // 2. ЕЛЕМЕНТИ
     // ---------------------------------------------------------
     const searchBtn = document.getElementById('searchBtn');
+    const locateBtn = document.getElementById('locateBtn'); // Кнопка геолокації
     const cityInput = document.getElementById('cityInput');
     const addressInput = document.getElementById('addressInput');
     const bakeryList = document.getElementById('bakeryList');
@@ -37,7 +48,68 @@ document.addEventListener('DOMContentLoaded', () => {
     let debounceTimer;
 
     // ---------------------------------------------------------
-    // 3. АВТОДОПОВНЕННЯ (Photon / OSM)
+    // 3. ФУНКЦІЯ ГЕОЛОКАЦІЇ (Locate Me)
+    // ---------------------------------------------------------
+    if (locateBtn) {
+        locateBtn.addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                alert("Ваш браузер не підтримує геолокацію.");
+                return;
+            }
+
+            // Індикація завантаження
+            const originalText = locateBtn.innerHTML;
+            locateBtn.innerHTML = '⏳ Шукаємо...';
+            locateBtn.disabled = true;
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    try {
+                        const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=uk`;
+                        const response = await fetch(url);
+
+                        if (!response.ok) throw new Error("Не вдалося отримати адресу");
+
+                        const data = await response.json();
+                        const addr = data.address;
+
+                        const city = addr.city || addr.town || addr.village || addr.county || "";
+                        const street = addr.road || addr.pedestrian || addr.suburb || "";
+                        const houseNumber = addr.house_number ? `, ${addr.house_number}` : "";
+
+                        if (city) cityInput.value = city;
+                        if (street) addressInput.value = street + houseNumber;
+
+                        locateBtn.innerHTML = originalText;
+                        locateBtn.disabled = false;
+
+                        searchBakeries();
+
+                    } catch (error) {
+                        console.error(error);
+                        alert("Не вдалося визначити адресу.");
+                        locateBtn.innerHTML = originalText;
+                        locateBtn.disabled = false;
+                    }
+                },
+                (error) => {
+                    if (error.code === error.PERMISSION_DENIED) {
+                        alert("Будь ласка, дозвольте доступ до геолокації.");
+                    } else {
+                        alert("Помилка отримання геопозиції.");
+                    }
+                    locateBtn.innerHTML = originalText;
+                    locateBtn.disabled = false;
+                }
+            );
+        });
+    }
+
+    // ---------------------------------------------------------
+    // 4. АВТОДОПОВНЕННЯ АДРЕСИ
     // ---------------------------------------------------------
     if (addressInput && suggestionsList) {
         addressInput.addEventListener('input', () => {
@@ -50,12 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
             debounceTimer = setTimeout(async () => {
                 try {
                     const fullQuery = city ? `${city}, ${query}` : query;
-                    // Використовуємо Nominatim для підказок (або Photon, якщо змінив URL)
                     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullQuery)}&addressdetails=1&limit=5&accept-language=uk`;
 
                     const response = await fetch(url);
                     if (!response.ok) return;
-
                     const data = await response.json();
                     renderSuggestions(data);
                 } catch (error) { console.error(error); }
@@ -89,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ---------------------------------------------------------
-    // 4. ПОШУК ТА ВІДОБРАЖЕННЯ (З НОВОЮ ФІЧЕЮ)
+    // 5. ПОШУК ТА ВІДОБРАЖЕННЯ
     // ---------------------------------------------------------
     async function searchBakeries() {
         const city = cityInput.value;
@@ -99,8 +169,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!city || !address) { alert("Введіть місто та вулицю."); return; }
 
         bakeryList.innerHTML = '<div class="loading">Шукаємо булочки... 🥨</div>';
-
-        // Видаляємо старі маркери
         markers.forEach(m => map.removeLayer(m));
         markers = [];
 
@@ -116,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
             resultsTitle.innerText = `Знайдено пекарень: ${data.bakeries.length}`;
             bakeryList.innerHTML = '';
 
-            // Центр і маркер користувача
             const userLocation = [data.searchCenter.lat, data.searchCenter.lon];
             map.setView(userLocation, 15);
 
@@ -129,53 +196,59 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             data.bakeries.forEach(bakery => {
-                // 1. Створюємо маркер
                 const marker = L.marker([bakery.latitude, bakery.longitude], { icon: bakeryIcon }).addTo(map);
 
-                // Контент попапу
                 let popupContent = `<b>${bakery.name}</b><br>${bakery.address || 'Адреса не вказана'}`;
                 if (bakery.openingHours) {
                     const formattedHours = bakery.openingHours.replace(/;/g, '<br>');
                     popupContent += `<div class="opening-hours-popup"><span class="opening-hours-title">🕒 Графік роботи:</span>${formattedHours}</div>`;
-                } else {
-                    popupContent += `<div class="opening-hours-popup" style="color: #999;">🕒 Графік не вказано</div>`;
                 }
                 marker.bindPopup(popupContent);
                 markers.push(marker);
 
-                // 2. Створюємо картку
                 const card = document.createElement('div');
                 card.className = 'bakery-card';
                 const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${bakery.latitude},${bakery.longitude}`;
 
+                let logoHtml = '<div class="icon-box">🥯</div>';
+
+                if (bakery.website) {
+                    try {
+                        let safeUrl = bakery.website.trim();
+                        if (safeUrl.startsWith('http://')) safeUrl = safeUrl.replace('http://', '');
+                        if (safeUrl.startsWith('https://')) safeUrl = safeUrl.replace('https://', '');
+                        if (safeUrl.includes('/')) safeUrl = safeUrl.split('/')[0];
+
+                        const logoUrl = `https://www.google.com/s2/favicons?domain=${safeUrl}&sz=128`;
+
+                        logoHtml = `
+                            <div class="logo-wrapper">
+                                <img src="${logoUrl}" alt="${bakery.name}" 
+                                     onerror="this.parentElement.innerHTML='<div class=\\'icon-box\\'>🥯</div>'"> 
+                            </div>
+                        `;
+                    } catch (e) {
+                        console.log("Помилка URL:", e);
+                    }
+                }
+
                 card.innerHTML = `
-                    <div class="icon-box">🥯</div>
+                    ${logoHtml}
                     <div class="card-content">
                         <h3 class="bakery-name">"${bakery.name}"</h3>
                         <a href="${googleMapsUrl}" target="_blank" class="btn-google">Показати на Google карті ↗</a>
                         <div class="distance-info">${Math.round(bakery.distanceMeters)} метрів від вас</div>
                     </div>`;
 
-                // --- НОВА ЛОГІКА КЛІКУ ПО КАРТЦІ ---
                 card.addEventListener('click', () => {
-                    // Плавно летимо до пекарні
-                    map.flyTo([bakery.latitude, bakery.longitude], 17, {
-                        animate: true,
-                        duration: 1.5
-                    });
-                    // Відкриваємо попап маркера
+                    map.flyTo([bakery.latitude, bakery.longitude], 17, { animate: true, duration: 1.5 });
                     marker.openPopup();
-
-                    // (Опціонально) Підсвічуємо картку, щоб видно було, що вона обрана
-                    document.querySelectorAll('.bakery-card').forEach(c => c.style.borderColor = '#EAD8C0');
-                    card.style.borderColor = '#E6A349';
                 });
 
-                // Важливо: Клік по кнопці Google Maps не повинен рухати карту на сайті
                 const googleBtn = card.querySelector('.btn-google');
                 if (googleBtn) {
                     googleBtn.addEventListener('click', (event) => {
-                        event.stopPropagation(); // Зупиняємо "спливання" події, щоб батьківська картка не реагувала
+                        event.stopPropagation();
                     });
                 }
 
